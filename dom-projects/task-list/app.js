@@ -10,6 +10,8 @@ loadEventListeners();
 
 // Load all event listeners
 function loadEventListeners() {
+  // DOM Load event
+  document.addEventListener('DOMContentLoaded', getTasks);
   // Add task event
   form.addEventListener('submit', addTask);
   // Remove task event
@@ -18,6 +20,36 @@ function loadEventListeners() {
   clearBtn.addEventListener('click', clearTasks);
   // Filter tasks event
   filter.addEventListener('keyup', filterTasks);
+}
+
+// Get Tasks from Local Storage
+function getTasks() {
+  let tasks;
+  if (localStorage.getItem('tasks') === null) {
+    tasks = [];
+  } else {
+    tasks = JSON.parse(localStorage.getItem('tasks'));
+  }
+  tasks.forEach((task) => {
+    // Create li element
+    const li = document.createElement('li');
+    // Add class
+    li.classList.add('collection-item');
+    // Create text node And append to li
+    li.appendChild(document.createTextNode(task));
+    // Create new link element
+    const link = document.createElement('a');
+    // Add class
+    link.classList.add('delete-item');
+    link.classList.add('secondary-content');
+    // Add icon html
+    link.innerHTML = '<i class="fa fa-remove"></i>';
+    // Append link to li
+    li.appendChild(link);
+
+    // Append li to ul
+    taskList.appendChild(li);
+  });
 }
 
 // Add task
@@ -47,8 +79,25 @@ function addTask(event) {
 
   // Append li to ul
   taskList.appendChild(li);
+
+  // Store in Local Storage
+  storeTaskInLocalStorage(taskInput.value);
+
   // Clear input
   taskInput.value = '';
+}
+
+// Store Task
+function storeTaskInLocalStorage(task) {
+  let tasks;
+  if (localStorage.getItem('tasks') === null) {
+    tasks = [];
+  } else {
+    tasks = JSON.parse(localStorage.getItem('tasks'));
+  }
+
+  tasks.push(task);
+  localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
 // Remove task
@@ -61,8 +110,29 @@ function removeTask(event) {
     if (confirm('Are you sure')) {
       // Remove li which is parent element of link
       el.parentElement.parentElement.remove();
+
+      // Remove from Local Storage
+      removeTaskFromLocalStorage(el.parentElement.parentElement);
     }
   }
+}
+
+// Remove from Local Storage
+function removeTaskFromLocalStorage(taskItem) {
+  let tasks;
+  if (localStorage.getItem('tasks') === null) {
+    tasks = [];
+  } else {
+    tasks = JSON.parse(localStorage.getItem('tasks'));
+  }
+
+  tasks.forEach((task, index) => {
+    if (taskItem.textContent === task) {
+      tasks.splice(index, 1);
+    }
+  });
+
+  localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
 //Clear tasks
@@ -78,7 +148,15 @@ function clearTasks(event) {
     }
 
     // https://jsperf.com/innerhtml-vs-removechild
+
+    // Clear from Local Storage
+    clearTasksFromLocalStorage();
   }
+}
+
+// Clear Tasks from Local Storage
+function clearTasksFromLocalStorage() {
+  localStorage.clear();
 }
 
 // Filter tasks
