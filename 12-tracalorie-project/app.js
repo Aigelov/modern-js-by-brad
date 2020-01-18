@@ -27,6 +27,26 @@ const ItemCtrl = (() => {
     getItems: () => {
       return data.items;
     },
+    addItem: (name, calories) => {
+      let ID;
+      // Create ID
+      if (data.items.length > 0) {
+        ID = data.items[data.items.length - 1].id + 1;
+      } else {
+        ID = 0;
+      }
+
+      // Calories to number
+      calories = parseInt(calories);
+
+      // Create new item
+      const newItem = new Item(ID, name, calories);
+
+      // Add to items array
+      data.items.push(newItem);
+
+      return newItem;
+    },
     logData: () => {
       return data;
     }
@@ -37,7 +57,10 @@ const ItemCtrl = (() => {
 // UI Controller
 const UICtrl = (() => {
   const UISelectors = {
-    itemList: '#item-list'
+    itemList: '#item-list',
+    addBtn: '.add-btn',
+    itemNameInput: '#item-name',
+    itemCaloriesInput: '#item-calories',
   };
 
   // Public methods
@@ -55,6 +78,17 @@ const UICtrl = (() => {
 
       // Insert list items
       document.querySelector(UISelectors.itemList).innerHTML = html;
+    },
+
+    getItemInput: () => {
+      return {
+        name: document.querySelector(UISelectors.itemNameInput).value,
+        calories: document.querySelector(UISelectors.itemCaloriesInput).value
+      }
+    },
+
+    getSelectors: () => {
+      return UISelectors;
     }
   }
 })();
@@ -62,6 +96,29 @@ const UICtrl = (() => {
 
 // App Controller
 const App = ((ItemCtrl, UICtrl) => {
+  // Load event listeners
+  const loadEventListeners = () => {
+    // Get UI Selectors
+    const UISelectors = UICtrl.getSelectors();
+
+    // Add item event
+    document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
+  };
+
+  // Add item submit
+  const itemAddSubmit = (event) => {
+    event.preventDefault();
+
+    // Get from input from UI Controller
+    const input = UICtrl.getItemInput();
+
+    // Check for name and calorie input
+    if (input.name !== '' && input.calories !== '') {
+      // Add item
+      const newItem = ItemCtrl.addItem(input.name, input.calories);
+    }
+  };
+
   // Public methods
   return {
     init: () => {
@@ -70,9 +127,13 @@ const App = ((ItemCtrl, UICtrl) => {
 
       // Populate list with items
       UICtrl.populateItemList(items);
+
+      // Load event listeners
+      loadEventListeners();
     }
   }
 })(ItemCtrl, UICtrl);
+
 
 // Initialize app
 App.init();
