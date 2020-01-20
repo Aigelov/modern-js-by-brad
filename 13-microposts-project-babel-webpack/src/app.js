@@ -34,3 +34,21 @@ const submitPost = () => {
 };
 // Listen for submit post
 document.querySelector('.post-submit').addEventListener('click', submitPost);
+
+// Delete post
+const deletePost = (event) => {
+  event.preventDefault();
+  if (event.target.parentElement.classList.contains('delete')) {
+    const id = event.target.parentElement.dataset.id;
+    if (confirm('Are you sure?')) {
+      http.delete(`http://localhost:3000/posts/${id}`)
+        .then(() => {
+            ui.showAlert('Post removed', 'alert alert-success');
+            getPosts();
+        })
+        .catch(err => console.error(err));
+    }
+  }
+};
+// Listen for delete
+document.querySelector('#posts').addEventListener('click', deletePost);
