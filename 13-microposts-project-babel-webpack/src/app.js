@@ -52,3 +52,24 @@ const deletePost = (event) => {
 };
 // Listen for delete
 document.querySelector('#posts').addEventListener('click', deletePost);
+
+// Enable edit state
+const enableEdit = (event) => {
+  event.preventDefault();
+  if (event.target.parentElement.classList.contains('edit')) {
+    const id = event.target.parentElement.dataset.id;
+    const title = event.target.parentElement.previousElementSibling.previousElementSibling.textContent;
+    const body = event.target.parentElement.previousElementSibling.textContent;
+
+    const data = {
+      id,
+      title,
+      body
+    };
+
+    // Fill form with current post
+    ui.fillForm(data);
+  }
+};
+// Listen for edit state
+document.querySelector('#posts').addEventListener('click', enableEdit);
