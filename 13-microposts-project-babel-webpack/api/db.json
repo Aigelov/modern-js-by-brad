@@ -19,6 +19,11 @@
       "title": "Post Five",
       "body": "This is post five",
       "id": 5
+    },
+    {
+      "title": "Post Six changed",
+      "body": "This is post six changed",
+      "id": 6
     }
   ]
 }
